@@ -32,6 +32,7 @@ public class GridManager : MonoBehaviour
             BlockController blockAbove = grid[x, aboveY];
             blockAbove.FreeGridCells(); 
             blockAbove._isFalling = true; 
+
             MakeBlocksAboveFall(x, aboveY); 
         }
     }
