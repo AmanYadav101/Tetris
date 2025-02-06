@@ -9,7 +9,7 @@ public class BlockController : MonoBehaviour
     public GameObject rig; 
 
     private GridManager _gridManager;
-    private bool _isFalling = false;
+    public bool _isFalling = false;
     private float _fallSpeed = 2f; 
     private Vector3 _targetPosition;
 
@@ -25,6 +25,13 @@ public class BlockController : MonoBehaviour
         _spriteRenderer.sortingOrder = 51;
         _isFalling = false;
         FreeGridCells();
+        
+        foreach (Transform subBlock in rig.transform)
+        {
+            int x = Mathf.FloorToInt(subBlock.position.x / _gridManager.cellSize);
+            int y = Mathf.FloorToInt(subBlock.position.y / _gridManager.cellSize);
+            _gridManager.MakeBlocksAboveFall(x, y);
+        }
     }
 
     public void OnDropped()
@@ -64,7 +71,7 @@ public class BlockController : MonoBehaviour
         foreach (Transform subBlock in rig.transform)
         {
             Vector2 subBlockWorldPosition = subBlock.position;
-            _gridManager.OccupyPosition(subBlockWorldPosition);
+            _gridManager.OccupyPosition(subBlockWorldPosition, this);
         }
     }
 
@@ -136,7 +143,7 @@ public class BlockController : MonoBehaviour
         transform.position = new Vector3(snappedX, snappedY, transform.position.z);
     }
 
-    private void FreeGridCells()
+    public void FreeGridCells()
     {
         if (rig == null) return;
 

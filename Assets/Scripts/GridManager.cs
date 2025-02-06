@@ -5,42 +5,44 @@ public class GridManager : MonoBehaviour
     public Vector2 gridSize = new Vector2(7, 10);
     public float cellSize = 1f;
     public Transform middleArea;
+    public BlockController[,] grid;
 
-    public bool[,] grid;
+    private void Awake() => InitializeGrid();
+    private void InitializeGrid() => grid = new BlockController[(int)gridSize.x, (int)gridSize.y];
 
-    private void Awake()
-    {
-        InitializeGrid();
-    }
-
-    private void InitializeGrid()
-    {
-        grid = new bool[(int)gridSize.x, (int)gridSize.y];
-    }
-
-    public void OccupyPosition(Vector2 position)
+    public void OccupyPosition(Vector2 position, BlockController block)
     {
         int x = Mathf.FloorToInt(position.x / cellSize);
         int y = Mathf.FloorToInt(position.y / cellSize);
-
-        if (x >= 0 && x < gridSize.x && y >= 0 && y < gridSize.y)
-        {
-            grid[x, y] = true;
-        }
+        if (IsWithinGrid(x, y)) grid[x, y] = block;
     }
 
     public void FreePosition(Vector2 position)
     {
         int x = Mathf.FloorToInt(position.x / cellSize);
         int y = Mathf.FloorToInt(position.y / cellSize);
+        if (IsWithinGrid(x, y)) grid[x, y] = null;
+    }
 
-        if (x >= 0 && x < gridSize.x && y >= 0 && y < gridSize.y)
+    public void MakeBlocksAboveFall(int x, int y)
+    {
+        int aboveY = y + 1;
+        if (IsWithinGrid(x, aboveY) && grid[x, aboveY] != null)
         {
-            grid[x, y] = false;
+            BlockController blockAbove = grid[x, aboveY];
+            blockAbove.FreeGridCells(); 
+            blockAbove._isFalling = true; 
+            MakeBlocksAboveFall(x, aboveY); 
         }
     }
 
-    private void OnDrawGizmos()
+    private bool IsWithinGrid(int x, int y)
+    {
+        return x >= 0 && x < gridSize.x && y >= 0 && y < gridSize.y;
+    }
+
+
+private void OnDrawGizmos()
     {
         if (middleArea == null) return;
 
