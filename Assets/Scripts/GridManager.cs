@@ -27,13 +27,16 @@ public class GridManager : MonoBehaviour
     public void MakeBlocksAboveFall(int x, int y)
     {
         int aboveY = y + 1;
-        if (IsWithinGrid(x, aboveY) && grid[x, aboveY] != null)
+        if (IsWithinGrid(x, aboveY))
         {
             BlockController blockAbove = grid[x, aboveY];
-            blockAbove.FreeGridCells(); 
-            blockAbove._isFalling = true; 
+            if (grid[x, aboveY] != null)
+            {
+                blockAbove.FreeGridCells();
+                blockAbove._isFalling = true;
+            }   
 
-            MakeBlocksAboveFall(x, aboveY); 
+            MakeBlocksAboveFall(x, aboveY);
         }
     }
 
@@ -43,7 +46,7 @@ public class GridManager : MonoBehaviour
     }
 
 
-private void OnDrawGizmos()
+    private void OnDrawGizmos()
     {
         if (middleArea == null) return;
 
